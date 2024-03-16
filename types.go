@@ -361,6 +361,11 @@ func (c Chat) ChatConfig() ChatConfig {
 type Message struct {
 	// MessageID is a unique message identifier inside this chat
 	MessageID int `json:"message_id"`
+	// Unique identifier of a message thread to which the message belongs;
+	// for supergroups only
+	//
+	// optional
+	MessageThreadID int `json:"message_thread_id,omitempty"`
 	// From is a sender, empty for messages sent to channels;
 	//
 	// optional
@@ -400,6 +405,10 @@ type Message struct {
 	//
 	// optional
 	ForwardSenderName string `json:"forward_sender_name,omitempty"`
+	// IsTopicMessage true if the message is sent to a forum topic
+	//
+	// optional
+	IsTopicMessage bool `json:"is_topic_message,omitempty"`
 	// ForwardDate for forwarded messages, date the original message was sent in Unix time;
 	//
 	// optional
@@ -1816,6 +1825,21 @@ type ChatLocation struct {
 	// Address is the location address; 1-64 characters, as defined by the chat
 	// owner
 	Address string `json:"address"`
+}
+
+// ForumTopic represents a forum topic.
+type ForumTopic struct {
+	// MessageThreadID is the unique identifier of the forum topic
+	MessageThreadID int `json:"message_thread_id"`
+	// Name is the name of the topic
+	Name string `json:"name"`
+	// IconColor is the color of the topic icon in RGB format
+	IconColor int `json:"icon_color"`
+	// IconCustomEmojiID is the unique identifier of the custom emoji
+	// shown as the topic icon
+	//
+	// optional
+	IconCustomEmojiID string `json:"icon_custom_emoji_id,omitempty"`
 }
 
 // BotCommand represents a bot command.

@@ -265,6 +265,7 @@ func (CloseConfig) params() (Params, error) {
 // BaseChat is base type for all chat config types.
 type BaseChat struct {
 	ChatID                   int64 // required
+	MessageThreadID          int
 	ChannelUsername          string
 	ProtectContent           bool
 	ReplyToMessageID         int
@@ -277,6 +278,7 @@ func (chat *BaseChat) params() (Params, error) {
 	params := make(Params)
 
 	params.AddFirstValid("chat_id", chat.ChatID, chat.ChannelUsername)
+	params.AddNonZero("message_thread_id", chat.MessageThreadID)
 	params.AddNonZero("reply_to_message_id", chat.ReplyToMessageID)
 	params.AddBool("disable_notification", chat.DisableNotification)
 	params.AddBool("allow_sending_without_reply", chat.AllowSendingWithoutReply)
@@ -974,13 +976,15 @@ func (config GetGameHighScoresConfig) method() string {
 // ChatActionConfig contains information about a SendChatAction request.
 type ChatActionConfig struct {
 	BaseChat
-	Action string // required
+	Action          string // required
+	MessageThreadID int
 }
 
 func (config ChatActionConfig) params() (Params, error) {
 	params, err := config.BaseChat.params()
 
 	params["action"] = config.Action
+	params.AddNonZero("message_thread_id", config.MessageThreadID)
 
 	return params, err
 }
@@ -2218,6 +2222,43 @@ func (config DeleteChatStickerSetConfig) params() (Params, error) {
 	params.AddFirstValid("chat_id", config.ChatID, config.SuperGroupUsername)
 
 	return params, nil
+}
+
+// BaseForum is a base type for all forum config types.
+type BaseForum struct {
+	ChatID             int64
+	SuperGroupUsername string
+}
+
+func (config BaseForum) params() (Params, error) {
+	params := make(Params)
+
+	params.AddFirstValid("chat_id", config.ChatID, config.SuperGroupUsername)
+
+	return params, nil
+}
+
+// CreateForumTopicConfig allows you to create a topic
+// in a forum supergroup chat.
+type CreateForumTopicConfig struct {
+	BaseForum
+	Name              string
+	IconColor         int
+	IconCustomEmojiID string
+}
+
+func (config CreateForumTopicConfig) method() string {
+	return "createForumTopic"
+}
+
+func (config CreateForumTopicConfig) params() (Params, error) {
+	params, err := config.BaseForum.params()
+
+	params.AddNonEmpty("name", config.Name)
+	params.AddNonZero("icon_color", config.IconColor)
+	params.AddNonEmpty("icon_custom_emoji_id", config.IconCustomEmojiID)
+
+	return params, err
 }
 
 // MediaGroupConfig allows you to send a group of media.

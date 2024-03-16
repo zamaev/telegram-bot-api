@@ -25,6 +25,21 @@ func NewMessage(chatID int64, text string) MessageConfig {
 	}
 }
 
+// NewMessage creates a new Message with MessageThreadID.
+//
+// chatID is where to send it, text is the message text.
+func NewMessageToTopic(chatID int64, topicID int, text string) MessageConfig {
+	return MessageConfig{
+		BaseChat: BaseChat{
+			ChatID:           chatID,
+			ReplyToMessageID: 0,
+			MessageThreadID:  topicID,
+		},
+		Text:                  text,
+		DisableWebPagePreview: false,
+	}
+}
+
 // NewDeleteMessage creates a request to delete a message.
 func NewDeleteMessage(chatID int64, messageID int) DeleteMessageConfig {
 	return DeleteMessageConfig{
@@ -66,6 +81,21 @@ func NewForward(chatID int64, fromChatID int64, messageID int) ForwardConfig {
 func NewCopyMessage(chatID int64, fromChatID int64, messageID int) CopyMessageConfig {
 	return CopyMessageConfig{
 		BaseChat:   BaseChat{ChatID: chatID},
+		FromChatID: fromChatID,
+		MessageID:  messageID,
+	}
+}
+
+// NewCopyMessage creates a new copy message with MessageThreadID.
+//
+// chatID is where to send it, fromChatID is the source chat,
+// and messageID is the ID of the original message.
+func NewCopyMessageToTopic(chatID int64, topicID int, fromChatID int64, messageID int) CopyMessageConfig {
+	return CopyMessageConfig{
+		BaseChat: BaseChat{
+			ChatID:          chatID,
+			MessageThreadID: topicID,
+		},
 		FromChatID: fromChatID,
 		MessageID:  messageID,
 	}
@@ -171,6 +201,14 @@ func NewVoice(chatID int64, file RequestFileData) VoiceConfig {
 			BaseChat: BaseChat{ChatID: chatID},
 			File:     file,
 		},
+	}
+}
+
+// NewCreateForumTopic creates a new createForumTopic request.
+func NewCreateForumTopic(chatID int64, name string) CreateForumTopicConfig {
+	return CreateForumTopicConfig{
+		BaseForum: BaseForum{ChatID: chatID},
+		Name:      name,
 	}
 }
 
